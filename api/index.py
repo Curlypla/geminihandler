@@ -51,7 +51,7 @@ def get_gemini_response(prompt):
             print(f"Using key: {api_key}, Attempt: {attempt + 1}, Model: {models[attempt]}, Temperature: {temperatures[attempt]}")
             
             genai.configure(api_key=api_key)
-            model = genai.GenerativeModel(models[attempt], safety_setting            
+            model = genai.GenerativeModel(models[attempt], safety_settings=SAFETY_SETTINGS)
             generation_config = {"temperature": temperatures[attempt]}
             response = model.generate_content(prompt, generation_config=generation_config, request_options={"timeout": 600})
             
