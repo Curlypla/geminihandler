@@ -3,17 +3,18 @@
     {
       "src": "app.py",
       "use": "@vercel/python"
+      
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
       "dest": "app.py"
+        "functions": {
+          "api/*.py": {
+            "maxDuration": 60
+          }
+        }
     }
-  ],
-  "functions": {
-    "api/*.py": {
-      "maxDuration": 10
-    }
-  }
+  ]
 }
