@@ -37,14 +37,16 @@ class APIKeyManager:
                         self.usage[key] = {"count": 0, "last_reset": current_time}
                     if self.usage[key]["count"] < USES_PER_MINUTE:
                         self.usage[key]["count"] += 1
+                        return key
                     self.keys.rotate(-1)
             time.sleep(1)
 
 key_manager = APIKeyManager(API_KEYS)
 
 def get_gemini_response(prompt):
-    models = ['gemini-1.5-pro-latest', 'gemini-1.5-pro-latest', 'gemini-1.5-flash-latest']
-    temperatures = [1.0, 0.5, 1.0]  # Default, lower temperature, default for flash
+    models = ['gemini-1.5-pro-latest', 'gemini-1.5-pro-latest', 'gemini-1.5-flash']
+    temperatures = [1.0, 0.5, 1.0]  # Default, lower temperature, default for flash model
+
     for attempt in range(MAX_RETRIES):
         try:
             api_key = key_manager.get_available_key()
@@ -52,6 +54,7 @@ def get_gemini_response(prompt):
             
             genai.configure(api_key=api_key)
             model = genai.GenerativeModel(models[attempt], safety_settings=SAFETY_SETTINGS)
+            
             generation_config = {"temperature": temperatures[attempt]}
             response = model.generate_content(prompt, generation_config=generation_config, request_options={"timeout": 600})
             
@@ -59,7 +62,8 @@ def get_gemini_response(prompt):
             return response.text
         except Exception as e:
             if attempt == MAX_RETRIES - 1:  # If this was the last attempt
-                 time.sleep(1)  # Wait a bit before retrying
+                return f"Error after {MAX_RETRIES} attempts: {str(e)}"
+            time.sleep(1)  # Wait a bit before retrying
     
     # This line should never be reached, but just in case:
     return "Unexpected error occurred"
@@ -71,7 +75,8 @@ def hello_world():
 
 @app.route('/generate', methods=['POST'])
 def generate():
-    prompt = re    if not prompt:
+    prompt = request.json.get('prompt')
+    if not prompt:
         return jsonify({"error": "No prompt provided"}), 400
     
     response = get_gemini_response(prompt)
