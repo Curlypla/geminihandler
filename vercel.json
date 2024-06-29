@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "app/server.js" }
+    { "source": "/(.*)", "destination": "app.py" }
   ],
   "functions": {
     "app.py": {
