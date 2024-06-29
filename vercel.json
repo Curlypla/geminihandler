@@ -12,7 +12,7 @@
     }
   ],
   "functions": {
-    "app.py": {
+    "api/*.py": {
       "maxDuration": 60
     }
   }
