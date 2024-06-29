@@ -11,9 +11,7 @@
       "dest": "app.py"
     }
   ],
-  "functions": {
-    "*.py": {
-      "maxDuration": 10
-    }
+  "config": {
+    "maxDuration": 60
   }
 }
