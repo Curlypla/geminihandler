@@ -51,6 +51,8 @@ def get_gemini_response(prompt):
             response = model.generate_content(prompt, generation_config=generation_config, request_options={"timeout": 600})
             
             print(f"Request successful on attempt {attempt + 1}")
+            print(response.text)
+            print(response.candidate.safety_ratings)
             return response.text
         except Exception as e:
             if attempt == MAX_RETRIES - 1:  # If this was the last attempt
