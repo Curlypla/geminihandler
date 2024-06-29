@@ -53,6 +53,11 @@ def get_gemini_response(prompt):
     # This line should never be reached, but just in case:
     return "Unexpected error occurred"
 
+# hello world route
+@app.route('/')
+def hello_world():
+    return 'zhy'
+
 @app.route('/generate', methods=['POST'])
 def generate():
     prompt = request.json.get('prompt')
@@ -63,4 +68,4 @@ def generate():
     return jsonify({"response": response})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
