@@ -1,13 +1,10 @@
 {
+  "rewrites": [
+    { "source": "/(.*)", "destination": "app/server.js" }
+  ],
   "functions": {
-    "app.py": {
+    "app/server.js": {
       "maxDuration": 60
     }
-  },
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "app.py"
-    }
-  ]
+  }
 }
