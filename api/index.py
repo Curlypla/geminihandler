@@ -1,4 +1,5 @@
-import time, os
+import time
+import os
 from flask import Flask, request, jsonify
 import google.generativeai as genai
 from collections import deque
@@ -10,7 +11,7 @@ app = Flask(__name__)
 API_KEYS = os.getenv("API_KEYS").split(",")  # Comma-separated list of API keys
 USES_PER_MINUTE = 2
 RESET_INTERVAL = 60  # seconds
-MAX_RETRIES = 2
+MAX_RETRIES = 3
 
 class APIKeyManager:
     def __init__(self, keys):
@@ -35,13 +36,21 @@ class APIKeyManager:
 key_manager = APIKeyManager(API_KEYS)
 
 def get_gemini_response(prompt):
+    models = ['gemini-1.5-pro-latest', 'gemini-1.5-pro-latest', 'gemini-1.5-flash']
+    temperatures = [1.0, 0.5, 1.0]  # Default, lower temperature, default for flash model
+
     for attempt in range(MAX_RETRIES):
         try:
             api_key = key_manager.get_available_key()
-            print("using key:", api_key)
+            print(f"Using key: {api_key}, Attempt: {attempt + 1}, Model: {models[attempt]}, Temperature: {temperatures[attempt]}")
+            
             genai.configure(api_key=api_key)
-            model = genai.GenerativeModel('gemini-1.5-pro-latest')
-            response = model.generate_content(prompt, request_options={"timeout": 600})
+            model = genai.GenerativeModel(models[attempt])
+            
+            generation_config = {"temperature": temperatures[attempt]}
+            response = model.generate_content(prompt, generation_config=generation_config, request_options={"timeout": 600})
+            
+            print(f"Request successful on attempt {attempt + 1}")
             return response.text
         except Exception as e:
             if attempt == MAX_RETRIES - 1:  # If this was the last attempt
@@ -61,7 +70,7 @@ def generate():
     prompt = request.json.get('prompt')
     if not prompt:
         return jsonify({"error": "No prompt provided"}), 400
-
+    
     response = get_gemini_response(prompt)
     return jsonify({"response": response})
 
