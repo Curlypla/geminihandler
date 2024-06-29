@@ -12,6 +12,8 @@
     }
   ],
   "functions": {
-    "maxDuration": 60
+    "api/app.py": {
+      "maxDuration": 60
+    }
   }
 }
